@@ -1,0 +1,519 @@
+swagger: "2.0"
+info:
+  version: 1.0.0
+  title: "Depo iOS"
+  description: A sample API that uses a petstore as an example to demonstrate features in the swagger-2.0 specification
+  termsOfService: http://swagger.io/terms/
+  contact:
+    name: Swagger API Team
+    email: foo@example.com
+    url: http://madskristensen.net
+  license:
+    name: MIT
+    url: http://github.com/gruntjs/grunt/blob/master/LICENSE-MIT
+host: petstore.swagger.io
+basePath: /api/1.0
+schemes:
+  - http
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /mobile/auth:
+    post:
+      description: 
+        Авторизация, если прошла успешно возвращается token пользователя
+      parameters:
+        - name: uuid
+          in: body
+          description: uuid устройства
+          required: true
+          schema:
+            $ref: '#/definitions/UUID'
+      responses:
+        403:
+          description: Плохо
+        200:
+          description: Авторизация прошла успешно
+          schema:
+            $ref: '#/definitions/Auth'
+  /m/registerios?token={token}:
+    post:
+      description: Авторизация, если прошла успешно возвращается token пользователя iOS
+      parameters:
+       - name: uuid
+         in: body
+         description: uuid устройства
+         required: false
+         schema:
+            $ref: '#/definitions/UuidDeviceToken'
+       - name: token
+         in: path
+         description: токен устройства
+         required: true
+         type: string
+      responses:
+        403:
+          description: Bad
+        200: 
+          description: Авторизация прошла успешно
+          schema:
+            $ref: '#/definitions/Auth'
+  /m/manufacturers:
+    get:
+      description: Список марок авто
+      parameters:
+        - name: token
+          in: body
+          description: токен устройства
+          required: false
+          schema:
+            $ref: '#/definitions/Auth'
+      responses:
+        403:
+          description: Bad
+        200: 
+          description: manufacture response
+          schema:
+            $ref: '#/definitions/ListObject'
+  /m/models/{id}/list:
+    get:
+      description: Список моделей авто определённой марки
+      parameters:
+        - name: id
+          in: path
+          description: id manufacture
+          required: true
+          type: string
+        - name: token
+          in: body
+          description: токен устройства
+          required: false
+          schema:
+            $ref: '#/definitions/Auth'
+      responses:
+        403:
+          description: Bad
+        200: 
+          description: models response
+          schema:
+            $ref: '#/definitions/ListObject'
+  /m/models/{id}/bodies:
+    get:
+      description: Список двигателей по модели авто
+      parameters:
+        - name: id
+          in: path
+          description: id car model
+          required: true
+          type: string
+        - name: token
+          in: body
+          description: токен устройства
+          required: false
+          schema:
+            $ref: '#/definitions/Auth'
+      responses:
+        403:
+          description: Bad
+        200: 
+          description: models bodies response
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/CarBody'
+  /m/cities:
+    get:
+      description: Список городов
+      parameters:
+        - name: token
+          in: body
+          description: токен устройства
+          required: false
+          schema:
+            $ref: '#/definitions/Auth'
+      responses:
+        403:
+          description: Bad
+        200: 
+          description: cities response
+          schema:
+            $ref: '#/definitions/ListObject'
+  /m/orders/me:
+    get:
+      description: Список мои заказов
+      parameters:
+        - name: body
+          in: body
+          description: токен устройства
+          required: true
+          schema:
+            $ref: '#/definitions/LimitObjects'
+      responses:
+        403:
+          description: Bad
+        200: 
+          description: orders response
+          schema:
+            $ref: '#/definitions/OrdersResult'
+  /m/orders/me/{id}:
+    get:
+      description: Заказ по id
+      parameters:
+        - name: token
+          in: body
+          description: токен устройства
+          required: false
+          schema:
+            $ref: '#/definitions/Auth'
+        - name: id
+          in: path
+          description: id заказа
+          required: true
+          type: string
+      responses:
+        403:
+          description: Bad
+        200: 
+          description: order response
+          schema:
+            $ref: '#/definitions/OrderResult'
+  /m/razbors/gettotal:
+    get:
+      description: Количество зарегестрированных компаний
+      parameters:
+        - name: token
+          in: body
+          description: токен устройства
+          required: false
+          schema:
+            $ref: '#/definitions/Auth'
+      responses:
+        403:
+          description: Bad
+        200: 
+          description: total response
+          schema:
+            $ref: '#/definitions/Total'
+  /m/orders/operation?token={token}:
+    post:
+      description: Создать заказ
+      parameters:
+        - name: token
+          in: path
+          description: токен устройства
+          required: true
+          type: string
+        - name: user
+          in: body
+          description: новый заказ
+          required: false
+          schema:
+            $ref: '#/definitions/OrderID'
+      responses:
+        403:
+          description: Bad
+        200: 
+          description: Успешно добавили заказ
+          schema:
+            $ref: '#/definitions/OrderStatus'
+  /m/orders?token={token}:
+    post:
+      description: Создать заказ
+      parameters:
+        - name: token
+          in: path
+          description: токен устройства
+          required: true
+          type: string
+        - name: user
+          in: body
+          description: новый заказ
+          required: false
+          schema:
+            $ref: '#/definitions/NewOrder'
+      responses:
+        403:
+          description: Bad
+        200: 
+          description: Успешно добавили заказ
+definitions:
+  OrderStatus:
+    type: object
+    required:
+      - result
+    properties:
+      result:
+        type: object
+        required: 
+          - status
+        properties:
+          status:
+            type: integer
+  OrderID: 
+    type: object
+    required: 
+      - orderID
+    properties:
+      orderID:
+        type: string
+  LimitObjects: 
+    type: object
+    required: 
+      - token
+    properties:
+      limit:
+        type: integer
+      token:
+        type: string
+  UUID: 
+    type: object
+    required: 
+      - uuid
+    properties:
+      uuid:
+        type: string
+  UuidDeviceToken: 
+    type: object
+    required: 
+      - uuid
+      - device_token
+    properties:
+      uuid:
+        type: string
+      device_token:
+        type: string
+  User: 
+    type: object
+    required: 
+      - phone
+    properties:
+      phone:
+        type: string
+  Total: 
+    type: object
+    required:
+      - total
+    properties:
+      total:
+        type: string
+  HelpOrder: #Для поля order в добавление нового заказа
+    type: object
+    required:
+      -  show_phone
+      -  city_id
+    properties:
+      show_phone:
+        type: string
+      city_id:
+        type: string
+  NewOrder: # Новый заказ
+    type: object
+    required:
+      - user
+      - order
+      - orderlist
+      - car
+    properties:
+      user:
+        $ref: '#/definitions/User'
+      order:
+        $ref: '#/definitions/OrderCar'
+      orderlist:
+        type: array
+        items:
+          $ref: '#/definitions/SparePart'
+      car:
+        $ref: '#/definitions/OrderCar'
+  OrdersResult:
+    type: object
+    required:
+      - result
+    properties:
+      result:
+        type: array
+        items:
+          $ref: '#/definitions/Order'
+  OrderResult:
+    type: object
+    required:
+      - result
+    properties:
+      result:
+        $ref: '#/definitions/Order'
+  Order: # Заказ
+    type: object
+    required:
+         - id
+         - created
+         - city_id
+         - show_phone
+         - status
+         - orderlist
+         - car
+    properties:
+          id:
+            type: string
+          created:
+            type: string
+          city_id:
+            type: string
+          notes:
+            type: string
+          show_phone:
+            type: integer
+          status:
+            type: integer
+          orderlist:
+            type: array
+            items:
+              $ref: '#/definitions/SparePart'
+          car:
+            $ref: '#/definitions/OrderCar'
+  OrderCar: #Описание авто
+    type: object
+    required:
+      - manufactureId
+      - modelId
+      - wheel
+      - year
+    properties:
+      body:
+        type: string
+      engine:
+        type: string
+      manufacturerId:
+        type: string
+      modelId:
+        type: string
+      vin:
+        type: string
+      wheel: 
+        type: string
+      year:
+        type: string
+  SparePart: #Деталь заказа
+    type: object
+    required:
+      - id
+      - name
+      - new_type
+      - old_type
+      - order_id
+      - status
+      - answer
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      new_type:
+        type: integer
+      old_type:
+        type: integer
+      order_id:
+        type: string
+      status:
+        type: integer
+      answers:
+        type: array
+        items:
+          $ref: '#/definitions/Answer'
+  Answer: #Ответ
+    type: object
+    required:
+      - id
+      - razbor_id
+      - razbor_name
+      - part_price
+      - created
+      - part_type
+      - razbor_address
+    properties:
+      id:
+        type: string
+      razbor_id:
+        type: string
+      razbor_name:
+        type: string
+      part_price:
+        type: string
+      createdAt:
+        type: string
+      part_type: 
+        type: array
+        items:
+          type: string
+      razbor_address:
+        type: array
+        items:
+          $ref: '#/definitions/Address'
+  Address: #Адресс разбора
+    type: object
+    required:
+      - address
+      - phones
+    properties:
+      address:
+        type: string
+      phones:
+        type: array
+        items:
+          type: string
+  Auth: #Токен устройства
+    type: object
+    required:
+      - token
+    properties:
+      token:
+        type: string
+  CarBody: # Двигатели для каждой марки
+    type: object
+    required:
+      - id
+      - name
+      - engines
+    properties:
+      id:
+        type: string
+      name: 
+        type: string
+      engines:
+        type: array
+        items:
+            $ref: '#/definitions/Engine'
+  Engine: #Объект списков
+    type: object
+    required:
+      - id
+      - name
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+  Object:
+    type: object
+    required:
+      - id
+      - name
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+  ObjectRes:
+    type: object
+    required:
+      - id
+    properties:
+      id:
+       $ref: '#/definitions/Object'
+  ListObject: #Объект списков
+    type: object
+    required:
+      - result
+    properties:
+      result:
+        $ref: '#/definitions/ObjectRes'
